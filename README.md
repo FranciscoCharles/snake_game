@@ -2,7 +2,7 @@
 
 Jogo da cobrinha implementado em **Python+Pygame**.
 
-<img src="images/snake_game.png" width="600">
+<img src="src/images/snake_game.png" width="600">
 
 ## Controles
 
