@@ -100,6 +100,7 @@ class Game:
                         break
                     self.score = 0
                     FPS = 2
+                    FPS_ACCUMULATOR = 2
                     snake.reset(0,0)
                     apple.choosePosition(snake)
                     (text_score,text_max_score) = updateTextScore()
