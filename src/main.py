@@ -52,7 +52,7 @@ class Game:
         game_quit = False
         key_pressed = False
         self.score = 0
-        valid_keys = ['left','right','down','up']
+        valid_keys = ['left','right','down','up','w','a','s','z']
 
         snake = Snake(0,0,440,380,size=SIZE)
         apple = Apple(XMAX-1,YMAX-1,size=SIZE)
