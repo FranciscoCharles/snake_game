@@ -46,11 +46,11 @@ class Snake:
         self.body = [(x,y)]
     def getIncrement(self):
         (x,y) = (0,0)
-        if self.dir=='up':
+        if self.dir in ['up','w']:
             y = -self.size
-        elif self.dir=='down':
+        elif self.dir in ['down','z']:
             y = self.size
-        elif self.dir=='right':
+        elif self.dir in ['right','s']:
             x = self.size
         else:
             x = -self.size
