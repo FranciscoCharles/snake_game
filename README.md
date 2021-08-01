@@ -48,6 +48,10 @@ Entre na pasta `src` e execute o comando `python main.py`.
 # Versão pygame
 - **Pygame** == **1.9.6**
 
+# License
+
+For more information on the license for this project read the <a href="./LICENSE" title="go to license file">LICENSE</a> file.
+
 ---
 
 <p align="center">
