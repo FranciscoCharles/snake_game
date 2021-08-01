@@ -6,11 +6,11 @@ Jogo da cobrinha implementado em **Python+Pygame**.
 
 ## Controles
 
-Use :arrow_left:, :arrow_right:, :arrow_up:, :arrow_down:,`A`,`S`,`W` e `Z` para mover a snake.
+Use :arrow_left:, :arrow_right:, :arrow_up:, :arrow_down:,<kbd>A</kbd>,<kbd>S</kbd>,<kbd>W</kbd> e <kbd>Z</kbd> para mover a snake.
 
 Pressione o botao de direção por algum tempo para aumentar a velocidade.
 
-Na tela de `Game Over` pressione `Enter` para jogar novamente ou `Esq` para sair do jogo.
+Na tela de `Game Over` pressione <kbd>Enter</kbd> para jogar novamente ou <kbd>Esq</kbd> para sair do jogo.
 
 # O que jogo possui?
  - controles faceis de usar.
