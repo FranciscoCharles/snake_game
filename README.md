@@ -8,7 +8,7 @@ Este projeto é apenas um exemplo de um jogo da cobrinha implementado em **Pytho
 </p>
 
 <div align="center">
-    <img src="./src/images/snake_game.png" width="600">
+    <img src="./src/images/snake_game.png">
     <br>
     <h6>
         Figure 1 - exemplo de gameplay.
