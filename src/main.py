@@ -2,28 +2,47 @@ from os import environ
 if 'PYGAME_HIDE_SUPPORT_PROMPT' not in environ:
     environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hidden'
 del environ
+import PIL
+from PIL import Image
+from pygame import Surface
+from typing import Tuple, Optional
 import pygame
 from snake import Snake, Apple
 from os.path import normpath
 import json
+
+
+def openPilImageResize(filename: str, size: Optional[Tuple[int, int]] = (60, 60)) -> Surface:
+
+    image = Image.open(filename)
+    image = image.resize(size, PIL.Image.ANTIALIAS)
+    image = pygame.image.fromstring(image.tobytes(),
+                                    image.size, image.mode)
+    return image
+
 class Game:
+
     def __init__(self):
         self.config()
+
     def config(self):
         pygame.init()
         pygame.mixer.init()
         pygame.font.init()
         self.SCREEN_W = 500
         self.SCREEN_H = 500
-        pygame.display.set_caption('SnakeGame v0.1')
+        pygame.display.set_caption('SnakeGame v1.1.0')
+        icon = pygame.image.load('images/icon.png')
+        pygame.display.set_icon(icon)
         self.display = pygame.display.set_mode((self.SCREEN_W,self.SCREEN_H))
         self.background = None
+        self.pause_img = openPilImageResize('images/pause.png', (50,50))
         self.clock = pygame.time.Clock()
         self.score = 0
         self.max_score = self.loadScore()
         self.openSoundConfig()
 
-    def backgroundInit(self, xmax, ymax, size):
+    def backgroundInit(self, xmax:int, ymax:int, size:int):
         self.background = pygame.Surface((xmax*size,ymax*size))
         self.background.fill((120,120,120))
         for i in range(xmax+1):
@@ -33,11 +52,17 @@ class Game:
         pygame.draw.rect(self.background, (0), (0,(j+1)*size,(xmax+1)*size,80))
 
     def runLoop(self):
-        
+        def show_pause(text_pause, x, y):
+            width, height = self.pause_img.get_size()
+            text_width = (text_pause.get_width()-width)//2
+            self.display.blit(self.pause_img,(x,y))
+            self.display.blit(text_pause, (x-text_width, y+height))
+
         def updateTextScore():
             text_score = font.render(f'score: {self.score}', True, (255,255,255))
             text_max_score = font.render(f'max score: {self.max_score}', True, (255,255,255))
             return text_score,text_max_score
+
         FPS = 2
         FPS_ACCUMULATOR = FPS
         FPS_INCREMENT = 0.125
@@ -49,21 +74,25 @@ class Game:
 
         ticks = 0
         game = True
-        game_quit = False
         key_pressed = False
         self.score = 0
         valid_keys = ['left','right','down','up','w','a','s','z']
+        pause = False
 
         snake = Snake(0,0,440,380,size=SIZE)
         apple = Apple(XMAX-1,YMAX-1,size=SIZE)
         apple.choosePosition(snake)
 
         self.backgroundInit(XMAX,YMAX,SIZE)
+        font = pygame.font.SysFont('Verdana', 10)
+        
+        text_pause = font.render(f'Pause', True, (255,255,255))
         font = pygame.font.SysFont('Verdana', 20)
         font.set_bold(True)
-        
         (text_score,text_max_score) = updateTextScore()
+
         while game:
+            
             self.clock.tick(FPS)
             FPS = FPS_ACCUMULATOR
             self.display.blit(self.background,(OFFSETX,OFFSETY))
@@ -71,28 +100,31 @@ class Game:
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
                     game = False
-                    game_quit = True
                     break
                 elif e.type == pygame.KEYDOWN:
                     key = pygame.key.name(e.key)
                     if key == 'escape':
                         game = False
-                        game_quit = True
                         break
                     elif key in valid_keys:
                         ticks = pygame.time.get_ticks()
                         key_pressed = True
                         snake.dir = key
+                    elif key in ['p', 'space']:
+                        pause = not pause
                 elif e.type == pygame.KEYUP:
                     key_pressed = False
 
             if key_pressed and (pygame.time.get_ticks()-ticks)>50:
                 FPS = FPS_ACCUMULATOR+30
-
-            if game:
+            if pause:
+                snake.draw(self.display,OFFSETX,OFFSETY)
+                apple.draw(self.display,OFFSETX,OFFSETY)
+                show_pause(text_pause, 430,10)
+                pygame.display.flip()
+            elif game:
 
                 if snake.colideBody():
-
                     self.playGameOverSound()
                     self.max_score = self.saveScore()
                     game = self.gameOver()
@@ -138,6 +170,7 @@ class Game:
         game = True
         next_game = False
         ticks = 0
+
         while game:
             ticks += self.clock.tick(30)
             
@@ -165,8 +198,10 @@ class Game:
                 self.display.blit(text_info,(70,420))
                 pygame.display.flip()
         return next_game
+
     def quitGame(self):
         pygame.quit()
+
     def loadScore(self):
         try:
             file = open('score.txt')
@@ -178,11 +213,14 @@ class Game:
         with file:
             max_score = file.readline().strip()
         return int(max_score)
+
     def saveScore(self):
         scores = []
+        
         with open('score.txt') as file:
             for _ in range(5):
                 scores += [int(file.readline().strip())]
+
         with open('score.txt','w') as file:
             scores += [self.score]
             scores.sort(reverse=True)
@@ -191,12 +229,15 @@ class Game:
             for score in scores:
                 file.writelines(f'{score}\n')
         return self.max_score
+
     def playAppleSound(self):
         if self.effect is not None:
             self.effect.play()
+
     def playGameOverSound(self):
         if self.game_over is not None:
             self.game_over.play()
+
     def openSoundConfig(self):
         self.effect = None
         self.game_over = None
